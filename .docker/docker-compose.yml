@@ -1,0 +1,123 @@
+version: "3.9"
+
+services:
+
+    #application
+    app:
+        image: ${PROJECT_NAME}-img
+        container_name: ${PROJECT_NAME}-app
+        build:
+            context: .
+            dockerfile: ./config/php/Dockerfile
+        restart: unless-stopped
+        env_file: ../.env
+        environment:
+            #XDEBUG_CONFIG: client_host=${XDEBUG_REMOTE_HOST} client_port=${XDEBUG_STORM_PORT} remote_enable=1
+            #PHP_IDE_CONFIG: serverName=${XDEBUG_STORM_SERVER_NAME}
+            SERVICE_NAME: app
+            SERVICE_TAGS: dev
+        depends_on:
+            - nginx
+            - db
+            - redis
+        working_dir: /var/www
+        volumes:
+            - ../:/var/www
+            - ./config/php/conf.d:/usr/local/etc/php/conf.d
+        #- ./config/php:/usr/local/etc/php
+        networks:
+            - app-network
+        ports:
+            - "9000:9000"
+
+    #webserver
+    nginx:
+        image: ${PROJECT_NAME}-nginx-img
+        container_name: ${PROJECT_NAME}-nginx
+        build:
+            context: .
+            dockerfile: ./config/nginx/Dockerfile
+        env_file: ../.env
+        restart: unless-stopped
+        volumes:
+            - ../public:/var/www/public
+            - ./config/nginx:/etc/nginx/conf.d
+            - ./logs:/var/log/nginx/
+        networks:
+            - app-network
+        ports:
+            - "8098:80"
+
+#MySQL Service
+#examp: bash -c "mysqld --user=root --group_concat_max_len=1844674407370954752"
+    db:
+        image: mysql:5.7.22
+        container_name:  ${PROJECT_NAME}-db
+        restart: unless-stopped
+        command: >
+            bash -c "chmod 644 /etc/mysql/*.cnf && /entrypoint.sh mysqld"
+            "--innodb_use_native_aio=0"
+        env_file: ../.env
+        environment:
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        volumes:
+            - ../storage/dbdata:/var/lib/mysql/
+            - ./config/mysql:/etc/mysql
+        networks:
+            - app-network
+        ports:
+            - "3306:3306"
+
+    phpmyadmin:
+        image: phpmyadmin
+        container_name: ${PROJECT_NAME}-pma
+        depends_on:
+            - db
+        restart: unless-stopped
+        environment:
+            PMA_HOST: db
+            PMA_PORT: 3306
+            PMA_ARBITRARY: 1
+        links:
+            - db
+        ports:
+            - 8081:80
+        networks:
+            - app-network
+
+#REDIS Service
+    redis:
+        image: redis
+        container_name: ${PROJECT_NAME}-redis
+        restart: unless-stopped
+        volumes:
+            - ./config/redis:/usr/local/etc/redis
+            - ../storage/redis:/data
+        #command: [ "redis-server","/usr/local/etc/redis/redis.conf", "--daemonize", "yes"]
+        command: [ "redis-server"]
+        ports:
+            - "6379:6379"
+        networks:
+            - app-network
+
+    phpredisadmin:
+        image: erikdubbelboer/phpredisadmin
+        container_name: ${PROJECT_NAME}-pra
+        depends_on:
+            - redis
+        restart: unless-stopped
+        environment:
+            REDIS_1_HOST: redis
+            REDIS_1_PORT: 6379
+        links:
+            - redis
+        ports:
+            - 8082:80
+        networks:
+            - app-network
+
+#Docker Networks
+networks:
+    app-network:
+        driver: bridge

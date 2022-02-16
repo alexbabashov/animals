@@ -1,0 +1,153 @@
+*,
+*:before,
+*:after {
+    margin: 0;
+    padding: 0;
+    border:0;
+    box-sizing: border-box;
+    font-size: 100%;
+    font: inherit;
+}
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                          supported by Chrome, Edge, Opera and Firefox */
+}
+
+html,
+body {
+    background-color: cadetblue;
+    height: 100%;
+}
+
+.wraper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #E0F7FA 0%, #80DEEA 100%);
+}
+
+.buttons_container {
+    flex-grow: 0;
+}
+
+.buttons_body{
+    display: flex;
+    padding: 50px;
+}
+
+.button_plus{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 35px;
+    color: #E0F7FA;
+
+    width: 48px;
+    height: 48px;
+    clip-path: circle(50%);
+    background: #3E2723;
+}
+.button_plus:hover{
+    cursor: pointer;
+}
+
+.button_animals_bg{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-left: -24px;
+
+    border-radius: 0 10px 10px 0;
+    background: #D7CCC8;
+}
+
+
+
+.button_animals{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.button_animals_wraper{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    margin-left: 40px;
+    margin-right: 20px;
+}
+
+.button_animal_item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-right: 10px;
+
+    min-width: 40px;
+    min-height: 40px;
+
+    border-radius: 50%;
+    border: solid 2px #3E2723;
+    background: white;
+}
+
+.button_animal_item:last-child{
+    margin-right: 0px;
+}
+.button_animal_item:hover{
+    cursor: pointer;
+}
+
+.button_animal_img{
+    min-width: 28px;
+    min-height: 28px;
+    max-width: 28px;
+    max-height: 28px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 25px;
+}
+
+.animals_container {
+    flex-grow: 1;
+    display: flex;
+    min-height: 100%;
+}
+
+.animals_body {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 10px;
+}
+
+.animal_wrap{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+    width: 100%;
+    height:100%;
+    -background-color:brown;
+    outline: 2px rgb(76, 113, 236);
+}
+
+.animal_item {
+    -border: solid 1px rgb(26, 165, 56);
+    -background-color:rgb(224, 221, 221);
+    background: center/contain no-repeat;
+    outline: 2px black;
+    height: 100%;
+}
+

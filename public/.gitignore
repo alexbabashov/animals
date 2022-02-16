@@ -1,0 +1,6 @@
+*
+!.gitignore
+!.htaccess
+!index.php
+!mix-manifest.json
+!robots.txt
