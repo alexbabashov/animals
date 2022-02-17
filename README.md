@@ -144,8 +144,8 @@ https://docs.docker.com/engine/install/
 ## **Запуск приложения**
 
 Создание и запуск контейнеров
-
-        docker-compose up --build
+        
+        docker-compose -f ./.docker/docker-compose.yml up --build
 
 Установка зависимостей
 
