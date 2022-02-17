@@ -1,7 +1,7 @@
 {
-    "name": "alexbabashov/test1",
+    "name": "alexbabashov/animals",
     "type": "project",
-    "description": "The Test project",
+    "description": "tech demo",
     "keywords": ["alexbabashov", "laravel", "vue"],
     "license": "MIT",
     "require": {

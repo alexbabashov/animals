@@ -1,7 +1,7 @@
 {
     "author": "Alexander Babashov",
     "private": true,
-    "description": "demo project",
+    "description": "tech demo",
     "scripts": {
         "dev": "npm run development",
         "development": "mix",
