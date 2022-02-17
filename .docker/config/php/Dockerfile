@@ -44,7 +44,7 @@ RUN apt-get update && apt-get install -y \
 
 # nvm environment variables
 ENV NVM_DIR /usr/local/nvm
-ENV NODE_VERSION 16.13.2
+ENV NODE_VERSION 16.14.0
 
 RUN mkdir -p "$NVM_DIR" ; \
     curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh" | bash ;\
