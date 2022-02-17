@@ -1,4 +1,4 @@
-FROM  php:8.2-fpm
+FROM  php:8.1.2-fpm
 
 ARG uid=1000
 ARG user=www
@@ -32,11 +32,47 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libxml2-dev \
     libxpm-dev \
-    jpegoptim optipng pngquant gifsicle \
-    && pecl install xdebug \
-    && docker-php-ext-enable xdebug \
-    && docker-php-ext-install zip \
-    && docker-php-ext-install mysqli
+    libxslt1-dev \
+    jpegoptim optipng pngquant gifsicle
+
+RUN pecl install xdebug && \
+    docker-php-ext-enable xdebug && \
+    docker-php-ext-install zip \
+                          mysqli \
+                          pdo pdo_mysql \
+                          mbstring \
+                          exif \
+                          pcntl \
+                          bcmath \
+                          opcache \
+                          pcntl \
+                          bcmath \
+                          intl \
+                          calendar \
+                          dom \
+                          xsl && \
+    docker-php-ext-configure gd \
+        --enable-gd \
+        --with-jpeg \
+        --with-xpm \
+        --with-freetype &&  \
+        # before PHP 7.4.0
+        #--with-gd \
+        #--with-webp-dir \
+        #--with-jpeg-dir \
+        #--with-zlib-dir \
+        #--with-png-dir \
+        #--with-xpm-dir \
+        #--with-freetype-dir &&  \
+    docker-php-ext-install gd &&  \
+    pecl install -o -f redis  &&  \
+    rm -rf /tmp/pear  &&  \
+    docker-php-ext-enable redis
+
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    apt-get remove -y libxslt1-dev icu-devtools libicu-dev libxml2-dev && \
+    rm -rf /var/lib/apt/lists/*
 
 #ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 #RUN chmod +x /usr/local/bin/install-php-extensions && sync && \
@@ -51,46 +87,17 @@ RUN mkdir -p "$NVM_DIR" ; \
     /bin/bash -c "source $NVM_DIR/nvm.sh  \
     && nvm install $NODE_VERSION --latest-npm"
 
-# Use latest npm
-RUN npm i npm@latest -g
-
 # add node and npm to path so the commands are available
 ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
 ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
-#install VueJs
-RUN npm install -g @vue/cli
-
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath
-RUN docker-php-ext-configure gd \
-    --enable-gd \
-    --with-jpeg \
-    --with-xpm \
-    --with-freetype
-
-    # before PHP 7.4.0
-    #--with-gd \
-    #--with-webp-dir \
-    #--with-jpeg-dir \
-    #--with-zlib-dir \
-    #--with-png-dir \
-    #--with-xpm-dir \
-    #--with-freetype-dir
-
-RUN docker-php-ext-install gd
-
-RUN pecl install -o -f redis \
-    &&  rm -rf /tmp/pear \
-    &&  docker-php-ext-enable redis
+RUN npm i npm@latest -g # Use latest npm && \
+    npm install -g @vue/cli #install VueJs
 
 # Add user for laravel application
-RUN groupadd -g $uid $group
-RUN useradd -g $group -G www-data,root,$group -u $uid -d /home/$user -ms /bin/bash $user
-RUN mkdir -p /home/$user/.composer && \
+RUN groupadd -g $uid $group && \
+    useradd -g $group -G www-data,root,$group -u $uid -d /home/$user -ms /bin/bash $user && \
+    mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
 
 # Install composer
