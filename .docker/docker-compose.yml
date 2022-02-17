@@ -51,7 +51,7 @@ services:
 #MySQL Service
 #examp: bash -c "mysqld --user=root --group_concat_max_len=1844674407370954752"
     db:
-        image: mysql:5.7.22
+        image: mysql:5.7.37
         container_name:  ${PROJECT_NAME}-db
         restart: unless-stopped
         command: >
