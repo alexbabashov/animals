@@ -1,5 +1,8 @@
 # Технологическая демонстрация
 
+## **скачать проект**
+
+                git clone git@github.com:alexbabashov/animals.git
 ## **Stack**
 
 ### Frontend
