@@ -58,15 +58,49 @@ Response
                     }]
         }
 
-* **Получить параметры животного**
+* **Получить параметры животного для заданного типа животного**
 
 Request
 
->POST /animals/name
+>GET /animals/kinds/:cat
 
-        {
-            "name": "Simon",            
+Response
+
+        {            
+            "error": null,
+            "data": 
+                    [
+                        "kind": "cat",
+                        "max_size": 25,
+                        "max_age": 100,
+                        "growth_factor": 1.3
+                    ]
         }
+
+* **Получить список всех созданных(активных) животных и их параметры**
+
+Request
+
+>GET /animals/active
+
+Response
+
+        {            
+            "error": null,
+            "data": 
+                    [{
+                        "name": "Simon",
+                        "kind": "cat",
+                        "age": 1,
+                        "size": 1
+                    }]
+        }
+
+* **Получить параметры созданного животного**
+
+Request
+
+>GET /animals/active/:Simon
 
 Response
 
@@ -85,7 +119,7 @@ Response
 
 Request
 
->POST /animals
+>POST /animals/active
 
         {
             "name": "Simon",

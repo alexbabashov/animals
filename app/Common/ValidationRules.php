@@ -2,7 +2,6 @@
 
 namespace App\Common;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ValidationRules
@@ -33,17 +32,16 @@ class ValidationRules
         'kind.max'      => ':attribute максимальная длина :max',
     ];
 
-
-    public static function validateRequest(Request $request,
-                                            Array $rulles,
-                                            Array $rullesMsg )
+    public static function validateRequest( Array $fields,
+                                            Array $rulles
+                                            )
     {
         $errMsg = null;
 
         $validator = Validator::make(
-                                        $request->all(),
+                                        $fields,
                                         $rulles,
-                                        $rullesMsg
+                                        ValidationRules::ERR_MSG
                                     );
         $errors = $validator->errors();
         foreach ($errors->all() as $message) {

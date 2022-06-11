@@ -6,40 +6,33 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\Http\Controllers\api\BaseController;
 use App\Models\Animal;
-use App\Common\ValidationRules;
 
 class AnimalsController extends BaseController
 {
-    public function index()
+    public function index(Request $request)
     {
-        $result = Animal::getAllKinds();
-        Log::channel('api_animals')->debug('Get list kind: ', $result);
-        return Response()->json($result);
+        $response = null;
+        if(isset($request['kind'])){
+            $response = $this->show($request, $request['kind']);
+        }
+        else {
+            $result = Animal::getAllKinds();
+            $response = Response()->json($result);
+            Log::channel('api_animals')->debug('Get list kind: ', $result);
+        }
+        return $response;
     }
 
 
-    public function show(Request $request)
+    public function show(Request $request, $kind)
     {
-        $validFields = ValidationRules::validateRequest( $request,
-                                [
-                                    'kind' => ValidationRules::KIND,
-                                ],
-                                ValidationRules::ERR_MSG);
-
-        $result = Animal::getKind($validFields);
-
+        $result = Animal::getKind($kind);
         return response()->json($result);
     }
 
-    public function delete(Request $request)
+    public function delete(Request $request, $kind)
     {
-        $validFields = ValidationRules::validateRequest( $request,
-                                [
-                                    'kind' => ValidationRules::KIND,
-                                ],
-                                ValidationRules::ERR_MSG);
-
-        Animal::deleteByKind($validFields);
+        Animal::deleteByKind($kind);
         $result = [
             'error' => null,
             'data' =>  null

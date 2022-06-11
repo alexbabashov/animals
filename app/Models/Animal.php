@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
+use App\Common\ValidationRules;
 
 class Animal extends Model
 {
@@ -42,8 +43,14 @@ class Animal extends Model
         return self::result($data, $data ? null : 'List empty');
     }
 
-    public static function getKind(Array $validFields)
+    public static function getKind($kind)
     {
+        $validFields = ValidationRules::validateRequest( ['kind' => $kind],
+        [
+            'kind' => ValidationRules::KIND,
+        ]
+        );
+
         $data = null;
         if (isset($validFields['error'])) {
             $errMsg = $validFields['error'];
@@ -76,8 +83,13 @@ class Animal extends Model
         }
     }
 
-    public static function deleteByKind(Array $validFields)
+    public static function deleteByKind($kind)
     {
+        $validFields = ValidationRules::validateRequest( ['kind' => $kind],
+                                [
+                                    'kind' => ValidationRules::KIND,
+                                ]);
+
         $item = self::where('kind', $validFields['fields']['kind'])->first();
         if (isset( $item)) {
             $item->delete();

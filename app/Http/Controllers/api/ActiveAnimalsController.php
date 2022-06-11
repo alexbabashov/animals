@@ -5,8 +5,6 @@ namespace App\Http\Controllers\api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\api\BaseController;
 use App\Models\ActiveAnimal;
-use App\Common\ValidationRules;
-
 class ActiveAnimalsController extends BaseController
 {
     /**
@@ -28,56 +26,20 @@ class ActiveAnimalsController extends BaseController
      */
     public function create(Request $request)
     {
-        $validFields = ValidationRules::validateRequest( $request,
-                                [
-                                    'name' => ValidationRules::NAME,
-                                    'kind' => ValidationRules::KIND,
-                                ],
-                                ValidationRules::ERR_MSG);
-        $result = ActiveAnimal::addAnimal($validFields);
+        $result = ActiveAnimal::addAnimal($request->all());
 
         return response()->json($result);
     }
 
-    public function show(Request $request)
+    public function show(Request $request, $name)
     {
-        $errMsg = null;
-        $data = null;
-        $validFields = ValidationRules::validateRequest( $request,
-                                [
-                                    'name' => ValidationRules::NAME,
-                                ],
-                                ValidationRules::ERR_MSG);
-
-        if (isset($validFields['error'])) {
-            $errMsg = $validFields['error'];
-        } else {
-            $data = ActiveAnimal::getByName($validFields['fields']['name'], false);
-            $errMsg = $data ? null : 'not found';
-        }
-        $result = [
-            'error' => $errMsg,
-            'data' => $data
-        ];
+        $result = ActiveAnimal::getByName($name);
         return response()->json($result);
     }
 
     public function update(Request $request)
     {
-        $validFields = ValidationRules::validateRequest( $request,
-                                [
-                                    'name' => ValidationRules::NAME,
-                                ],
-                                ValidationRules::ERR_MSG);
-
-        if (isset($validFields['error'])) {
-            $result = [
-                'error' => $validFields['error'],
-                'data' => null
-            ];
-        } else {
-            $result = ActiveAnimal::upAge($validFields['fields']['name']);// getByName($validFields['fields']['name'], false);
-        }
+        $result = ActiveAnimal::upAge($request->all());
         return response()->json($result);
     }
 
@@ -93,21 +55,7 @@ class ActiveAnimalsController extends BaseController
 
     public function deleteByName(Request $request)
     {
-        $validFields = ValidationRules::validateRequest( $request,
-                            [
-                                'name' => ValidationRules::NAME,
-                            ],
-                            ValidationRules::ERR_MSG);
-
-        if (isset($validFields['error'])) {
-            $result = [
-                'error' => $validFields['error'],
-                'data' => null
-            ];
-        } else {
-            $result = ActiveAnimal::deleteByName($validFields['fields']['name']);
-        }
-
+        $result = ActiveAnimal::deleteByName($request->all());
         return response()->json($result);
     }
 }

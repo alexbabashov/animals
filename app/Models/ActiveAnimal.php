@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Common\ValidationRules;
 use App\Models\Animal;
 
 class ActiveAnimal extends Model
@@ -36,18 +37,29 @@ class ActiveAnimal extends Model
         return $result;
     }
 
-    public static function addAnimal(Array $fields)
+    public static function addAnimal(Array $fieldsIn)
     {
         $error = null;
         $data = null;
 
+        $fields = ValidationRules::validateRequest( $fieldsIn,
+                                [
+                                    'name' => ValidationRules::NAME,
+                                    'kind' => ValidationRules::KIND,
+                                ]);
+
         if (isset($fields['fields']['kind']) && isset($fields['fields']['name'])) {
             $name = $fields['fields']['name'];
             $kind = $fields['fields']['kind'];
+
             $animalByName = self::getByName($name);
-            if (!is_array($animalByName)) {
-                unset($animalByName);
+
+            if(isset($animalByName['data'])){
+                $error = 'name "' . $name . '" already exists';
+            }
+            else {
                 $animalKind = Animal::where('kind', $kind)->first();
+
                 if (isset($animalKind)) {
                     $newData = new ActiveAnimal;
                     $newData['name'] = $name;
@@ -57,11 +69,10 @@ class ActiveAnimal extends Model
                     $newData->save();
 
                     $data = self::getByName($name);
+                    $data = $data['data'];
                 } else {
                     $error = 'kind "' . $kind . '" not found';
                 }
-            } else {
-                $error = 'name "' . $name . '" already exists';
             }
         } else {
             $error = 'input parameters error';
@@ -126,32 +137,53 @@ class ActiveAnimal extends Model
         return $data;
     }
 
-    public static function getByName(String $name, bool $enableWraper=false)
+    public static function getByName($name)
     {
         $result = null;
         $data = null;
-        $animalByName = self::requestByName($name);
-        if (isset($animalByName)) {
 
-            $data[$animalByName['name']] = self::parseItemToArray($animalByName);
-        };
+        $validFields = ValidationRules::validateRequest(['name' => $name],
+        [
+            'name' => ValidationRules::NAME,
+        ]);
 
-        if ($enableWraper) {
-            $result = [
-                "error" => $data ? null : "not found",
-                "data" =>  $data
-            ];
-        } else {
-            $result = $data;
+        if (isset($validFields['error'])) {
+            $errMsg = $validFields['error'];
         }
+        else {
+            $errMsg = 'not found' ;
+            $animalByName = self::requestByName($validFields['fields']['name']);
+            if (isset($animalByName)) {
+                $data[$animalByName['name']] = self::parseItemToArray($animalByName);
+            };
+        }
+
+        $result = [
+            "error" => $data ? null : $errMsg,
+            "data" =>  $data
+        ];
 
         return  $result;
     }
 
-    public static function upAge(String $name)
+    public static function upAge(Array $fields)
     {
         $errMsg = null;
         $data = null;
+        $name = '';
+
+        $validFields = ValidationRules::validateRequest($fields,
+                        [
+                            'name' => ValidationRules::NAME,
+                        ]);
+
+        if (isset($validFields['error'])) {
+            $errMsg = $validFields['error'];
+        }
+        else {
+            $name = $validFields['fields']['name'];
+        }
+
         if (strlen($name)) {
             $animalByName = self::requestByName($name);
             if (isset($animalByName)) {
@@ -175,6 +207,7 @@ class ActiveAnimal extends Model
                     $errMsg = 'Maximum value reached';
                 }
                 $data = self::getByName($name);
+                $data = $data['data'];
             }
             else {
                 $errMsg = 'Not found';
@@ -189,17 +222,37 @@ class ActiveAnimal extends Model
         return $result;
     }
 
-    public static function deleteByName(String $name)
+    public static function deleteByName(Array $fields)
     {
-        $res = false;
-        if (strlen($name)) {
-            $animalByName = self::where('name', $name)->first();
-            if (isset($animalByName)) {
-                $animalByName->delete();
-                $res = true;
+        $errMsg = null;
+        $data = null;
+
+        $validFields = ValidationRules::validateRequest($fields,
+        [
+            'name' => ValidationRules::NAME,
+        ]);
+
+        if (isset($validFields['error'])) {
+            $errMsg = $validFields['error'];
+        }
+        else {
+            $errMsg = 'Not found';
+            $name = $validFields['fields']['name'];
+            if (strlen($name)) {
+                $animalByName = self::where('name', $name)->first();
+                if (isset($animalByName)) {
+                    $animalByName->delete();
+                    $errMsg = null;
+                }
             }
         }
-        return $res;
+
+         $result = [
+            "error" => $errMsg,
+            "data" =>  $data
+        ];
+
+        return $result;
     }
 
     public static function deleteAll()

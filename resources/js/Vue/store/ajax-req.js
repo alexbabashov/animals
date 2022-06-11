@@ -16,7 +16,7 @@ export default class AjaxReq {
     async getListKind() {
         let data = null;
         try {
-            const response = await this.axios.get('');
+            const response = await this.axios.get('/kinds');
             data = response.data.data;
         }
         catch(e) {
@@ -28,10 +28,8 @@ export default class AjaxReq {
     async getKind(kindName) {
         let data = null
         try {
-            const response = await this.axios.post('/kind', {
-                                                                kind: kindName
-                                                            });
-        data = response.data.data;
+            const response = await this.axios.get('/kinds/:' + kindName);
+            data = response.data.data;
         }
         catch(e) {
 
@@ -54,9 +52,7 @@ export default class AjaxReq {
     async getName(value) {
         let data = null
         try {
-            const response = await this.axios.post('/name', {
-                                                        name: value
-                                                    });
+            const response = await this.axios.get('/active/:' + value);
             data = response.data.data;
         }
         catch(e) {
@@ -68,7 +64,7 @@ export default class AjaxReq {
     async updAge(value) {
         let data = null
         try {
-            const response = await this.axios.post('/age', {
+            const response = await this.axios.post('/active/age', {
                                                         name: value
                                                     });
             data = response.data.data;
@@ -82,7 +78,7 @@ export default class AjaxReq {
     async add(inName, inKind) {
         let data = null
         try {
-            const response = await this.axios.post('/add', {
+            const response = await this.axios.post('/active', {
                 name: inName,
                 kind: inKind
             });
@@ -97,9 +93,7 @@ export default class AjaxReq {
     async delete(inName) {
         let res = false;
         try {
-            const response = await this.axios.post('/delete', {
-                                                name: inName
-                                            });
+            const response = await this.axios.post('/active/delete/:' + inName);
             res = response.data.error == null;
         }
         catch(e) {
@@ -111,7 +105,7 @@ export default class AjaxReq {
     async deleteAll() {
         let res = false;
         try {
-            const response = await this.axios.get('/delete');
+            const response = await this.axios.post('/active/delete');
             res = response.data.error == null;
         }
         catch(e) {
