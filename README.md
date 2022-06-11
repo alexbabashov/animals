@@ -1,5 +1,8 @@
 # Технологическая демонстрация
 
+## **скачать проект**
+
+                git clone git@github.com:alexbabashov/animals.git
 ## **Stack**
 
 ### Frontend
@@ -209,3 +212,8 @@ _не корректно работает при запуске из Windows_
 Получение IP адреса контейнеровнера для доступа из хостовой ОС
 
         docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <id-container>
+
+
+Пример тестов
+
+        docker exec test1-app php artisan test
