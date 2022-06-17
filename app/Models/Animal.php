@@ -43,32 +43,21 @@ class Animal extends Model
         return self::result($data, $data ? null : 'List empty');
     }
 
-    public static function getKind($kind)
+    public static function getKind(string $kind)
     {
-        $validFields = ValidationRules::validateRequest( ['kind' => $kind],
-        [
-            'kind' => ValidationRules::KIND,
-        ]
-        );
-
         $data = null;
-        if (isset($validFields['error'])) {
-            $errMsg = $validFields['error'];
-        } else {
-            $kind = $validFields['fields']['kind'];
 
-            if ( Cache::has(self::CASHE_KEY) ) {
-                $list = Cache::get(self::CASHE_KEY, null);
-                if( is_array($list) && isset($list[$kind])) {
-                    $data = $list[$kind];
-                }
-            } else {
-                $item = self::where('kind', $kind)->first();
-                $data = self::kindCollectionToArray($item);
+        if ( Cache::has(self::CASHE_KEY) ) {
+            $list = Cache::get(self::CASHE_KEY, null);
+            if( is_array($list) && isset($list[$kind])) {
+                $data = $list[$kind];
             }
-
-            $errMsg = $data ? null : 'not found';
+        } else {
+            $item = self::where('kind', $kind)->first();
+            $data = self::kindCollectionToArray($item);
         }
+
+        $errMsg = $data ? null : 'not found';
 
         return self::result($data, $errMsg);
     }
@@ -81,19 +70,16 @@ class Animal extends Model
                 $item->delete();
             }
         }
+        return self::result(null, null);
     }
 
-    public static function deleteByKind($kind)
+    public static function deleteByKind(string $kind)
     {
-        $validFields = ValidationRules::validateRequest( ['kind' => $kind],
-                                [
-                                    'kind' => ValidationRules::KIND,
-                                ]);
-
-        $item = self::where('kind', $validFields['fields']['kind'])->first();
+        $item = self::where('kind', $kind)->first();
         if (isset( $item)) {
             $item->delete();
         }
+        return self::result(null, null);
     }
 
     public static function result($data, $errMsg)

@@ -32,72 +32,13 @@ class AnimalsController extends BaseController
 
     public function delete(Request $request, $kind)
     {
-        Animal::deleteByKind($kind);
-        $result = [
-            'error' => null,
-            'data' =>  null
-        ];
+        $result = Animal::deleteByKind($kind);
         return Response()->json($result);
     }
 
     public function deleteAll(Request $request)
     {
-        Animal::deleteAll();
-        $result = [
-            'error' => null,
-            'data' =>  null
-        ];
+        $result = Animal::deleteAll();
         return Response()->json($result);
     }
-
-    // public function age(Request $request)
-    // {
-    //     $validator = Validator::make(
-    //         $request->all(),
-    //         [
-    //             'name' => ValidationRules::NAME
-    //         ],
-    //         ValidationRules::ERR_MSG
-    //     );
-    //     $fields = $validator->validated();
-    //     if (isset($fields['name'])) {
-    //         $result = ActiveAnimal::upAge($fields['name']);
-    //     }
-
-    //     return response()->json($result);
-    // }
-
-    // public function deleteAll(Request $request)
-    // {
-    //     ActiveAnimal::deleteAll();
-    //     $result = [
-    //         'error' => null,
-    //         'data' =>  null
-    //     ];
-    //     return Response()->json($result);
-    // }
-
-    // public function deleteByName(Request $request)
-    // {
-    //     $errMsg = null;
-    //     $validFields = self::validateRequest( $request,
-    //                             [
-    //                                 'name' => ValidationRules::NAME,
-    //                             ],
-    //                             ValidationRules::ERR_MSG );
-
-    //     if (isset($validFields['error'])) {
-    //         $errMsg = $validFields['error'];
-    //     } else {
-    //         $isDelete = ActiveAnimal::deleteByName($validFields['fields']['name']);
-    //         if (!$isDelete) {
-    //             $errMsg = 'not found';
-    //         }
-    //     }
-    //     $result = [
-    //         'error' => $errMsg,
-    //         'data' => null
-    //     ];
-    //     return response()->json($result);
-    // }
 }
